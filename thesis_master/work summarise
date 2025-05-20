@@ -1,0 +1,86 @@
+### Work completed ###
+
+
+Mathematical model that projects trajectories on a 2.5D surface:
+
+	Using the DEM of the terrain, a small dt that ensures a smooth discretisation of the path, and a hand-made vector projection process, the sequences of inputs are converted to
+	trajectories that 1) fit the surface (so in 3D), 2) get deviated by the curvature of the terrain as opposed to the projections made under the flat-ground assumption
+
+
+MPPI algorithm on GPU
+
+	Sampling process: random sequences of random inputs are drawn from a given sequence of inputs. Thanks to the use of GPU, each input of each sequence is drawn at the same time.
+	
+	Velocity conversion: each sequence of inputs is converted to a sequence of corresponding linear and angular speed, using a differential model. Each sequence is computed in parallel.
+	
+	Trajectory projection: each sequence of velocities is sent to the aforementioned model that predicts the corresponding trajectories on the 2.5D surface. Each trajectory is computed in parallel
+			       Note that the traditional 2D projection was also implemented in order to be able to compare both versions
+			       
+	Trajectory evaluation: each trajectory is evaluated based on a cost function. The latter for now includes four terms: one ensuring that the robot navigates towards the goal, one encouraging a 
+			       high-speed, one avoiding the slopes, one ensuring to stay as far as possible to the obstacles.
+	
+	Trajectory computation: the approximated optimal sequence of inputs is computed using the traditional importance sampling process. The sequence is then shifted by one and sent to the next control loop
+	
+	
+Simulation setup (for now object-oriented in python)
+	
+	Robot class: an object of this class is responsible for keeping track of the robot state (heading angle, position, wheels velocities, linear and angular velocity)
+	
+	Surface class: an object of this class contains the data regarding the terrain on which the robot is navigating. Those data include the resolution, the terrain dimension, and the DEM.
+		       The user can either import his own DEM or create his by giving bumps, craters, or obstacles positions and dimensions as inputs. 
+		       The obstacles are represented as a costmap (the cost reduces as getting further away from the collision space).
+
+	MPPI class: an object of this class represents an MPPI controller, which interacts with the robot class to update its states while navigating towards a goal. It contains many arguments such as
+		    the physical and dynamics constraints of the robot, the sampling variables, the number of trajectories and iterations to use, tuning parameters, and so on.
+		    
+
+
+
+
+
+### Test protocol & results ###
+
+
+Lunar terrain DEM taken from NASA dataset: 
+	- dimensions: 150m x 150m
+	- resolution: one cell = 10cm x 10cm 
+	- includes bumps, craters density: 1/5m^2, rocks density: 1/10m^2
+	
+
+Each run was made on a distance of around 200m (starting from one extreme of the map to the other). 
+
+Around 2000 tests were run to compare the performance in various scenarios (varying weights in the cost function, various terrain constraints, various number of trajectories):
+When using high number of rollouts (like 1000 per loop), the performances of 3D and 2D are similar (~0.5% improvement when using 3D). However, when reducing the number of trajectories (down to 500 or 350), 
+then 2D becomes less efficient, since it faces both low distribution density and inaccurate trajectories predictions, whereas 3D only suffers from the former. Here is a summarise of the results: 
+
+	- When the cost function stricly avoids the slopes, the 3D MPPI outperforms the 2D MPPI in terms of speed and obstacles avoidance safety. The corresponding costs are around 3% lower for 3D. 
+	
+	- When removing the rocks, the performances are very similar. Logical since the MPPI can easily focus on avoiding the slopes, therefore rendering 3D irrelevant
+	
+	- When reducing the slope avoidance (keep avoiding steep craters, but tolerate small ones and gentle inclined surfaces and bumps), the 3D outperforms the 2D up in all categories (slope, speed 
+	  and obstacles avoidance), with ratios ranging from 3 to 5% improvements
+	  
+	  
+	  
+	  
+	  
+	  
+### Key achievements ###
+
+
+- Implemented the first WARP-coded MPPI, with 3ms per control loop
+- Managed to reach a 1.8m/s speed 
+- 100% succesful runs in hundreds of tests using 3D projection (against ~97% obstacle collisions when using 2D)
+- Started to find the specific conditions in which 3D is likely to outperform 2D
+
+
+
+
+	
+
+
+
+
+
+
+

@@ -1,0 +1,30 @@
+frame_work:
+  robot_radius: 1.2
+
+controller:
+  number_of_iterations: 100
+  dt: 0.045
+  number_of_trajectories: 1000
+
+velocities:
+  initial_linear_velocity: 0.0
+  min_linear_velocity: 0.0
+  max_linear_velocity: 2.0
+
+  initial_angular_velocity: 0.00
+  min_angular_velocity: -1.0
+  max_angular_velocity: 1.0
+
+inputs:
+  std_dev_u1: 0.25
+  std_dev_u2: 0.25
+  min_u1: -1
+  max_u1: 1
+  min_u2: -1
+  max_u2: 1
+
+
+cost_evaluation:
+  temperature: 0.3
+
+

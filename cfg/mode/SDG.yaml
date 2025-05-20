@@ -1,0 +1,23 @@
+name: SDG
+generation_settings:
+  num_images: 1000
+  prim_path: Camera
+  camera_name: camera_annotations
+  camera_resolution: ${as_tuple:640,480}
+  data_dir: data
+  annotator_list: ["rgb", "semantic_segmentation", "instance_segmentation"]
+  image_format: png
+  annot_format: json
+  element_per_folder: 1000
+  add_noise_to_rgb: False
+  sigma: 5.0
+  seed: 42
+
+camera_settings:
+  camera_path: Camera/camera_annotations
+  focal_length: 1.93
+  horizontal_aperture: 3.6
+  vertical_aperture: 2.7
+  fstop: 0.0
+  focus_distance: 10.0
+  clipping_range: ${as_tuple:0.01, 1000000.0}
