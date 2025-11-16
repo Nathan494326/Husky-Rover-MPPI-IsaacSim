@@ -309,8 +309,9 @@ if __name__ == "__main__":
     from thesis_master.warp_implementation.MPPI_isaac import Surface, Robot, MPPI_Controller, plot_2d_surface_with_trajectory, plot_costmap_with_frames
     import time
 
-    # Parlont peu parlont joints
+
     class HuskyController:
+        
         def __init__(self, stage, robot_path = "/husky_robot"):
             self._robot_path = robot_path
             self._stage = stage
@@ -514,6 +515,8 @@ if __name__ == "__main__":
         controller_3d.robot.right_wheel_speed = right_stored # right_wheel_speed*wheel_radius*np.pi/180
 
 
+        # Visualisation tool for the MPPI trajectories
+        
         # if i % 50 == 0:
         #     points =  transform_trajs(controller_3d.trajectories, block_x_current, block_y_current, half_block, dem_height)
         #     costs = controller_3d.costs_wp.numpy()
